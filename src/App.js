@@ -9,6 +9,7 @@ function App() {
   const [ nc, setConnection ] = useState(null);
   const [ error, setError ] = useState("");
   const [ messages, setMessages ] = useState([]);
+  const [ natsMsg, setNatsMsg] = useState(null);
   let key = 0;
   
   const addMessage = (err ,msg) => {
@@ -16,7 +17,7 @@ function App() {
     const { subject, reply } = msg;
     const data = sc.decode(msg.data);
     const newMsg = {subject, reply, data, key, time: new Date().toUTCString()};
-    setMessages(messages => [...messages, newMsg]);
+    setNatsMsg(newMsg);
   }
   
   useEffect( () => {
@@ -34,6 +35,24 @@ function App() {
     }
   },[])
 
+  useEffect( () => {
+    let isUpdate = false;
+    if(natsMsg) {
+      const updatedMessages = messages.map( msg => {
+        if(msg.subject === natsMsg.subject) {
+          isUpdate = true;
+          return natsMsg
+        } else {
+          return msg
+        }
+      })
+      if(isUpdate){
+        setMessages(updatedMessages)
+      } else {
+        setMessages(messages => [...messages, natsMsg]);
+      }
+    }
+  }, [natsMsg])
 
   return (
     <div className="App">
