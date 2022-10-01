@@ -15,7 +15,7 @@ brew install nats-io/nats-tools/nats
 ### Step 3. Nats server configuration
 build server.conf in your react project
 
-```json
+```
 websocket: {
     port: 9090,
     no_tls: true
